@@ -119,12 +119,11 @@ webView.setOnWebChromeClientListener(new ECWebChromeClient() {
 
 JSApi 封装了 ECWebView 和 H5 之间的通信，通信的结果由 OnApiResponseListener 监听器返回，该监听器返回的方法如下：
 
-| 方法签名         | 含义                                                         |
-| ---------------- | ------------------------------------------------------------ |
-| fail(int code)   | api 调用失败后的回调，code 为错误码。                        |
-| goBack()         | 处理H5的返回事件                                             |
-| consumeSuccess() | 用户金币兑换淘礼金成功后回调，用于刷新用户剩余金币数         |
-| earnGold（）     | 跳转赚金币页面，如果不需要跳转功能，则可以JSApi api = new JSApi(this, false); |
+| 方法签名         | 含义                                                 |
+| ---------------- | ---------------------------------------------------- |
+| fail(int code)   | api 调用失败后的回调，code 为错误码。                |
+| goBack()         | 处理H5的返回事件                                     |
+| consumeSuccess() | 用户金币兑换淘礼金成功后回调，用于刷新用户剩余金币数 |
 
 
 
