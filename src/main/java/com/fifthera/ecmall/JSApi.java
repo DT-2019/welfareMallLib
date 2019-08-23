@@ -1,17 +1,22 @@
 package com.fifthera.ecmall;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
+import com.fifthera.alibaichuan.AliSdkMenu;
 import com.fifthera.ecmall.utils.DeviceUtils;
 import com.fifthera.ecmall.utils.RunUtil;
 import com.fifthera.ecmall.utils.Utils;
 
 import org.json.JSONObject;
+
+import static com.fifthera.ecmall.utils.NetworkRequestUtil.requestNetwork;
 
 
 /**
@@ -47,7 +52,7 @@ public class JSApi {
     /**
      * 设置 webview
      *
-     * @since 1.0
+     * @since 1000
      */
     void setWebView(ECBaseWebView webView) {
         this.webview = webView;
@@ -56,7 +61,7 @@ public class JSApi {
     /**
      * 获取 App 版本号
      *
-     * @since 1.0
+     * @since 1000
      */
     @JavascriptInterface
     String getAppVersion(Object object) {
@@ -66,7 +71,7 @@ public class JSApi {
     /**
      * 获取 SDK 版本号
      *
-     * @since 1.0
+     * @since 1000
      */
     @JavascriptInterface
     String getSDKVersion(Object object) {
@@ -76,7 +81,7 @@ public class JSApi {
     /**
      * 判断手机是否安装了前端传来的包名，并把安装结果返回给前端。
      *
-     * @since 1.0
+     * @since 1000
      */
     @JavascriptInterface
     boolean isAppInstall(Object packageName) {
@@ -91,12 +96,18 @@ public class JSApi {
      * 获取设备IMEI
      * @param object
      * @return
+     * @since 1000
      */
     @JavascriptInterface
     String getDeviceIMEI(Object object) {
         return Utils.getIMEI();
     }
 
+    /**
+     * @since 1000
+     * @param object
+     * @return
+     */
     @JavascriptInterface
     String getDeviceInfo(Object object) {
         StringBuffer stringBuffer = new StringBuffer();
@@ -116,7 +127,7 @@ public class JSApi {
     /**
      * 判断是否需要显示 title
      *
-     * @since 1.0
+     * @since 1000
      */
     @JavascriptInterface
     boolean isShowTitle() {
@@ -127,6 +138,7 @@ public class JSApi {
      * 接受流量主的金币数和可兑换的金额,由流量主客户端传入
      * @param gold
      * @param money
+     * @since 1000
      */
     public void setAccountInfo(int gold, float money) {
         this.gold = gold;
@@ -137,6 +149,7 @@ public class JSApi {
      * 获取到的金币和金额提供给前端
      * @param object
      * @return
+     * @since 1000
      */
     @JavascriptInterface
     String getAccountInfo(Object object) {
@@ -151,6 +164,7 @@ public class JSApi {
     /**
      * 跳转app，json数据, scheme packageName
      * @param Module
+     * @since 1000
      */
     @JavascriptInterface
     boolean openSchemeInApp(Object Module) {
@@ -177,6 +191,7 @@ public class JSApi {
 
     /**
      * 金币兑换淘礼金成功后回调
+     * @since 1000
      */
     @JavascriptInterface
     void consumeSuccess(Object object) {
@@ -189,6 +204,7 @@ public class JSApi {
      * 用户赚金币按钮是否可用
      * @param object
      * @return
+     * @since 1000
      */
     @JavascriptInterface
     boolean getEarnGoldStatus(Object object) {
@@ -198,6 +214,7 @@ public class JSApi {
     /**
      * 流量主客户端赚金币
      * @param object
+     * @since 1000
      */
     @JavascriptInterface
     void earnGold(Object object) {
@@ -206,11 +223,49 @@ public class JSApi {
         }
     }
 
+
+    /**
+     * 统一的网络请求方法，接收前端传来的url接口，请求数据返回前端 异步
+     *
+     * @param urlObject
+     * @since 1020
+     *
+     */
+    @JavascriptInterface
+    void commonRequestNetwork(Object urlObject, final CompletionHandler<String> handler) {
+        try {
+            final String urlModule = (String) urlObject;
+            Log.d("lzh", "commonRequestNetwork url:" + urlModule);
+            new Thread() {
+                @Override
+                public void run() {
+                    String result = requestNetwork(urlModule);
+                    handler.complete(result);
+                }
+            }.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 商品解析 获取正品保障等字段
+     * @param objectId
+     * @param handler
+     * @since 1030
+     */
+    @JavascriptInterface
+    void analyzeTbGoods(Object objectId, CompletionHandler<String> handler) {
+        String goodsId = (String)objectId;
+        String result = AliSdkMenu.getInstance((Activity) context).deCodeTBGoods(goodsId);
+        handler.complete(result);
+    }
+
     /**
      * 使用一个新的 WebView 来加载跳转链接，这样做的好处是不会白屏
      *
      * @param url 跳转链接
-     * @since 1.0
+     * @since 1000
      */
     private void loadUrlUseNewWebView(final String url) {
         if (webview != null) {
@@ -228,7 +283,7 @@ public class JSApi {
     /**
      * token 失效
      *
-     * @since 1.0
+     * @since 1000
      */
     @JavascriptInterface
     void tokenFail(Object object) {
@@ -240,7 +295,7 @@ public class JSApi {
     /**
      * 点击 H5 返回按钮
      *
-     * @since 1.0
+     * @since 1000
      */
     @JavascriptInterface
     void goBack(Object object) {
@@ -252,7 +307,7 @@ public class JSApi {
     /**
      * 首页需要拦截的 URL
      *
-     * @since 1.0
+     * @since 1000
      */
     @JavascriptInterface
     boolean interceptHomePageUrl(Object url) {
@@ -271,6 +326,7 @@ public class JSApi {
      * 判定首页是否需要拦截 URL
      *
      * @return true: 需要拦截  false: 不需要拦截
+     * @since 1000
      */
     @JavascriptInterface
     boolean shouldInterceptHomePageUrl(Object object) {
@@ -282,7 +338,7 @@ public class JSApi {
      * 用于 App 和 H5 之间进行信息传递
      *
      * @param listener 监听器
-     * @since 1.0
+     * @since 1000
      */
     public void setOnApiResponseListener(OnApiResponseListener listener) {
         this.listener = listener;

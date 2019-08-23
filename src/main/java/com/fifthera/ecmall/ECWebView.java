@@ -66,6 +66,8 @@ public class ECWebView extends ECBaseWebView {
         }
 
         String url = str.toString();
+
+
         return url;
     }
 
@@ -73,6 +75,7 @@ public class ECWebView extends ECBaseWebView {
         StringBuilder str = new StringBuilder();
         str.append(clientSecret);
         List<Map.Entry<String, Object>> list = comparsMap(map);
+
         for (Map.Entry entry : list) {
             str.append(entry.getKey())
                     .append(entry.getValue());
